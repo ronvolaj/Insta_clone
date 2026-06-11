@@ -29,3 +29,18 @@ const [recentImages] = await pool.query(
 );
 
 return { users, recentImages };
+
+export const actions = {
+    deleteImage: async ({ request, parent }) => {
+        const { user } = await parent();
+        if (!user || user.id !== 1) error(403, 'Admin only');
+        const formData = await request.formData();
+        const imageId = formData.get('image_id');
+        await pool.query(
+            'DELETE FROM images WHERE id = ?',
+            [imageId]
+        );
+
+        return { success: true };
+    }
+};
