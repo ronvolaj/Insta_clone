@@ -21,3 +21,17 @@ const [images] = await pool.query(
 );
 
 return { images };
+
+export const actions = {
+    delete: async ({ request, parent }) => {
+        const { user } = await parent();
+        if (!user) redirect(303, '/login');
+        const formData = await request.formData();
+        const imageId = formData.get('image_id');
+        await pool.query(
+            'DELETE FROM images WHERE id = ? AND author_id = ?',
+            [imageId, user.id]
+        );
+        return { success: true };
+    }
+};
