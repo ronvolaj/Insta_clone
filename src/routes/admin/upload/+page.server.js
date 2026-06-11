@@ -42,5 +42,12 @@ export const actions = {
         token: BLOB_READ_WRITE_TOKEN
     }
 );
+
+await pool.query(
+    'INSERT INTO images (image, description, author_id) VALUES (?, ?, ?)',
+    [blob.url, description, user.id]
+);
+
+redirect(303, '/dashboard');
     }
 };
