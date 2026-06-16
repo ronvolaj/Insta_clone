@@ -19,7 +19,7 @@
         <!-- Image Panel -->
         <div class="flex-1 min-w-0">
             <div class="rounded-2xl overflow-hidden bg-gray-100 shadow-sm">
-                <img src={img.image} alt={img.description ?? 'Photo'} class="w-full object-contain max-h-[70vh]"/>
+                <img src={img.image} alt={img.description ?? 'Photo'} class="w-full object-contain max-h-[70vh]" style="filter: {img.filter ?? ''}"/>
             </div>
         </div>
 

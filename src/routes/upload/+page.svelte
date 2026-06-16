@@ -2,22 +2,6 @@
     let { form } = $props();
     let preview = $state(null);
     let dragging = $state(false);
-    let selectedFilter = $state('none');
-
-    const filters = {
-        none: '',
-        grayscale: 'grayscale(100%)',
-        sepia: 'sepia(100%)',
-        saturate: 'saturate(200%)',
-        contrast: 'contrast(150%)',
-        brightness: 'brightness(130%)',
-        invert: 'invert(100%)',
-        blur: 'blur(2px)'
-    };
-
-    function filterStyle(f) {
-        return filters[f] ?? '';
-    }
 
     function handleFile(file) {
         if (file && file.type.startsWith('image/')) {
@@ -62,7 +46,7 @@
             ondrop={handleDrop}
         >
             {#if preview}
-                <img src={preview} alt="Preview" class="absolute inset-0 w-full h-full object-cover rounded-2xl" style="filter: {filterStyle(selectedFilter)}"/>
+                <img src={preview} alt="Preview" class="absolute inset-0 w-full h-full object-cover rounded-2xl"/>
                 <div class="absolute inset-0 bg-black/20 rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                     <span class="text-white text-[13px] font-medium bg-black/50 px-3 py-1.5 rounded-lg">Change photo</span>
                 </div>
@@ -85,27 +69,6 @@
                 class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-[13.5px] text-gray-900 placeholder:text-gray-400 outline-none resize-none focus:border-blue-500 focus:bg-white transition-colors"
             ></textarea>
         </div>
-
-        <!-- Filter Picker -->
-        <div>
-            <label class="block text-[13px] font-medium text-gray-600 mb-2">Filter</label>
-            <div class="grid grid-cols-4 gap-2">
-                {#each Object.keys(filters) as f}
-                    <button type="button" onclick={() => selectedFilter = f} class="cursor-pointer text-left">
-                        <div class="rounded-xl overflow-hidden border-2 transition-all {selectedFilter === f ? 'border-blue-500' : 'border-gray-200'}">
-                            {#if preview}
-                                <img src={preview} alt={f} class="w-full aspect-square object-cover" style="filter: {filterStyle(f)}"/>
-                            {:else}
-                                <div class="w-full aspect-square bg-gray-100"></div>
-                            {/if}
-                            <p class="text-center text-[11px] text-gray-500 py-1">{f}</p>
-                        </div>
-                    </button>
-                {/each}
-            </div>
-        </div>
-
-        <input type="hidden" name="filter" value={selectedFilter}/>
 
         <button type="submit"
             class="w-full py-3 bg-blue-500 hover:bg-blue-600 active:scale-[0.98] text-white text-[14px] font-medium rounded-xl transition-all shadow-sm">

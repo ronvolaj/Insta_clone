@@ -65,7 +65,7 @@
             {#each images as img}
                 <div class="group relative overflow-hidden rounded-xl bg-gray-100 aspect-square">
                     <a href="/image/{img.id}">
-                        <img src={img.image} alt={img.description ?? 'Photo'} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                        <img src={img.image} alt={img.description ?? 'Photo'} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" style="filter: {img.filter ?? ''}"/>
                     </a>
                     <!-- Overlay on hover -->
                     <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 pointer-events-none"></div>
