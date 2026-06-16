@@ -24,13 +24,11 @@ export async function load({ parent }) {
 }
 
 export const actions = {
+    // Delete a photo
     delete: async ({ request, cookies }) => {
         const sessionId = cookies.get('session_id');
         const user = await getUserFromSession(sessionId);
-
-        if (!user) {
-            throw redirect(303, '/login');
-        }
+        if (!user) throw redirect(303, '/login');
 
         const formData = await request.formData();
         const imageId = formData.get('image_id');
@@ -38,6 +36,24 @@ export const actions = {
         await pool.query(
             'DELETE FROM images WHERE id = ? AND author_id = ?',
             [imageId, user.id]
+        );
+
+        return { success: true };
+    },
+
+    // Update filter of a photo
+    updateFilter: async ({ request, cookies }) => {
+        const sessionId = cookies.get('session_id');
+        const user = await getUserFromSession(sessionId);
+        if (!user) throw redirect(303, '/login');
+
+        const formData = await request.formData();
+        const imageId = formData.get('image_id');
+        const filter = formData.get('filter') ?? 'none';
+
+        await pool.query(
+            'UPDATE images SET filter = ? WHERE id = ? AND author_id = ?',
+            [filter, imageId, user.id]
         );
 
         return { success: true };
