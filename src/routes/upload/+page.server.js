@@ -40,10 +40,13 @@ export const actions = {
         );
 
         // Save to database
+        
+        const filter = formData.get('filter') ?? 'none';
+
         await pool.query(
-            'INSERT INTO images (image, description, author_id) VALUES (?, ?, ?)',
-            [blob.url, description, user.id]
-        );
+        'INSERT INTO images (image, description, author_id, filter) VALUES (?, ?, ?, ?)',
+         [blob.url, description, user.id, filter]
+      );
 
         redirect(303, '/dashboard');
     }
