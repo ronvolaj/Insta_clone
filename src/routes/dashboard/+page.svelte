@@ -92,6 +92,7 @@
                         }}>
                             <input type="hidden" name="image_id" value={img.id}/>
                             <button type="submit"
+                                aria-label="Delete photo"
                                 onclick={(e) => { if (!confirm('Delete this photo?')) e.preventDefault(); }}
                                 class="w-7 h-7 bg-red-500 hover:bg-red-600 text-white rounded-lg flex items-center justify-center transition-colors"
                                 disabled={deleting === img.id}>
