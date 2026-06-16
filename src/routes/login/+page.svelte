@@ -69,7 +69,7 @@
         <!-- Register link -->
         <p class="text-center text-[13px] text-gray-400">
             Don't have an account?
-            <a href="/auth/register" class="text-blue-500 font-medium hover:underline">Register</a>
+            <a href="/register" class="text-blue-500 font-medium hover:underline">Register</a>
         </p>
     </div>
 

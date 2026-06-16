@@ -1,5 +1,6 @@
 import pool from '$lib/server/database';
 import { redirect } from '@sveltejs/kit';
+import { getUserFromSession } from '$lib/server/auth';
 
 export async function load({ parent }) {
     const { user } = await parent();
@@ -23,8 +24,9 @@ export async function load({ parent }) {
 }
 
 export const actions = {
-    delete: async ({ request, parent }) => {
-        const { user } = await parent();
+    delete: async ({ request, cookies }) => {
+        const sessionId = cookies.get('session_id');
+        const user = await getUserFromSession(sessionId);
 
         if (!user) {
             throw redirect(303, '/login');
