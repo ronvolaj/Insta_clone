@@ -18,6 +18,22 @@
         dragging = false;
         handleFile(e.dataTransfer.files?.[0]);
     }
+
+    let selectedFilter = $state('none');
+
+function filterStyle(f) {
+    const filters = {
+        none: '',
+        grayscale: 'grayscale(100%)',
+        sepia: 'sepia(100%)',
+        saturate: 'saturate(200%)',
+        contrast: 'contrast(150%)',
+        brightness: 'brightness(130%)',
+        invert: 'invert(100%)',
+        blur: 'blur(2px)'
+    };
+    return filters[f] ?? '';
+}
 </script>
 
 <svelte:head>
@@ -69,6 +85,26 @@
                 class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-[13.5px] text-gray-900 placeholder:text-gray-400 outline-none resize-none focus:border-blue-500 focus:bg-white transition-colors"
             ></textarea>
         </div>
+
+        <!-- Filter Picker -->
+<div>
+    <label class="block text-[13px] font-medium text-gray-600 mb-2">Filter</label>
+    <div class="grid grid-cols-4 gap-2">
+        {#each ['none','grayscale','sepia','saturate','contrast','brightness','invert','blur'] as f}
+            <label class="cursor-pointer">
+                <input type="radio" name="filter" value={f} class="hidden" bind:group={selectedFilter}/>
+                <div class="rounded-xl overflow-hidden border-2 transition-all {selectedFilter === f ? 'border-blue-500' : 'border-transparent'}">
+                    {#if preview}
+                        <img src={preview} alt={f} class="w-full aspect-square object-cover" style="filter: {filterStyle(f)}"/>
+                    {:else}
+                        <div class="w-full aspect-square bg-gray-100"></div>
+                    {/if}
+                    <p class="text-center text-[11px] text-gray-500 py-1">{f}</p>
+                </div>
+            </label>
+        {/each}
+    </div>
+</div>
 
         <button type="submit"
             class="w-full py-3 bg-blue-500 hover:bg-blue-600 active:scale-[0.98] text-white text-[14px] font-medium rounded-xl transition-all shadow-sm">
