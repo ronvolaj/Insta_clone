@@ -2,6 +2,7 @@
 import { verifyPassword, createSession } from '$lib/server/auth';
 import pool from '$lib/server/database';
 import { fail, redirect } from '@sveltejs/kit';
+import { dev } from '$app/environment';
  
 export const actions = {
     default: async ({ request, cookies }) => {
@@ -38,6 +39,8 @@ export const actions = {
         cookies.set('session_id', sessionId, {
             path: '/',
             httpOnly: true,
+            sameSite: 'lax',
+            secure: !dev,
             maxAge: 60 * 60 * 24 * 30 // 30 days
         });
  

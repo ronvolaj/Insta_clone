@@ -104,7 +104,7 @@
         <!-- Sign in link -->
         <p class="text-center text-[13px] text-gray-400">
             Already have an account?
-            <a href="/auth/login" class="text-blue-500 font-medium hover:underline">Sign in</a>
+            <a href="/login" class="text-blue-500 font-medium hover:underline">Sign in</a>
         </p>
     </div>
 

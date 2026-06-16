@@ -4,6 +4,7 @@ import pool from '$lib/server/database';
 import { fail, redirect } from '@sveltejs/kit';
 import { put } from '@vercel/blob';
 import { BLOB_READ_WRITE_TOKEN } from '$env/static/private';
+import { dev } from '$app/environment';
 
 export const actions = {
     default: async ({ request, cookies }) => {
@@ -57,9 +58,10 @@ export const actions = {
             path:     '/',
             httpOnly: true,
             sameSite: 'lax',
+            secure:   !dev,
             maxAge:   60 * 60 * 24 * 30
         });
 
-        redirect(303, '/dashboard');
+        throw redirect(303, '/dashboard');
     }
 };
