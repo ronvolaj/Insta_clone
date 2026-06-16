@@ -1,6 +1,7 @@
 // Load image details, comments, and whether the current user has voted
 import pool from '$lib/server/database';
 import { error, fail, redirect } from '@sveltejs/kit';
+import { getUserFromSession } from '$lib/server/auth';
 
 export async function load({ params, parent }) {
     const { user } = await parent();
@@ -48,8 +49,9 @@ export async function load({ params, parent }) {
 
 export const actions = {
     // Toggle upvote on an image (one vote per user)
-    vote: async ({ params, parent }) => {
-        const { user } = await parent();
+    vote: async ({ params, cookies }) => {
+        const sessionId = cookies.get('session_id');
+        const user = await getUserFromSession(sessionId);
         if (!user) return fail(401, { error: 'Login to vote' });
 
         const imageId = parseInt(params.id);
@@ -74,8 +76,9 @@ export const actions = {
     },
 
     // Post a comment on an image
-    comment: async ({ request, params, parent }) => {
-        const { user } = await parent();
+    comment: async ({ request, params, cookies }) => {
+        const sessionId = cookies.get('session_id');
+        const user = await getUserFromSession(sessionId);
         if (!user) return fail(401, { error: 'Login to comment' });
 
         const formData = await request.formData();

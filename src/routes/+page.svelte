@@ -2,6 +2,26 @@
     let { data } = $props();
     let featured = $derived(data.featured ?? []);
     let recent = $derived(data.recent ?? []);
+
+    const filters = {
+        none: '',
+        grayscale: 'grayscale(100%)',
+        sepia: 'sepia(100%)',
+        saturate: 'saturate(200%)',
+        contrast: 'contrast(150%)',
+        brightness: 'brightness(130%)',
+        cool: 'hue-rotate(180deg) saturate(120%)',
+        warm: 'sepia(50%) saturate(150%)',
+        fade: 'brightness(110%) saturate(80%)',
+        drama: 'contrast(130%) brightness(90%)',
+        vintage: 'sepia(40%) contrast(110%) brightness(90%)',
+        invert: 'invert(100%)',
+        blur: 'blur(2px)'
+    };
+
+    function filterStyle(f) {
+        return filters[f] ?? '';
+    }
 </script>
 
 <svelte:head>
@@ -32,7 +52,9 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {#each featured as img, i}
                     <a href="/image/{img.id}" class="group relative overflow-hidden rounded-2xl bg-gray-100 aspect-square block shadow-sm hover:shadow-lg transition-shadow">
-                        <img src={img.image} alt={img.description ?? 'Photo'} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                        <img src={img.image} alt={img.description ?? 'Photo'} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" style:filter={filterStyle(img.filter ?? 'none')}/>
+ter ?? 'none')}/>
+
                         <!-- Rank badge -->
                         <div class="absolute top-3 left-3 w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold
                             {i===0 ? 'bg-yellow-400 text-yellow-900' : i===1 ? 'bg-gray-300 text-gray-700' : 'bg-orange-300 text-orange-900'}">
@@ -71,7 +93,7 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {#each recent as img}
                     <a href="/image/{img.id}" class="group relative overflow-hidden rounded-xl bg-gray-100 aspect-square block hover:shadow-md transition-shadow">
-                        <img src={img.image} alt={img.description ?? 'Photo'} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                        <img src={img.image} alt={img.description ?? 'Photo'} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" style:filter={img.filter ?? ''}/>
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                             <p class="text-white text-[12px] truncate">{img.description ?? ''}</p>
