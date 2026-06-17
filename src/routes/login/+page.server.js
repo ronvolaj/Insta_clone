@@ -33,6 +33,10 @@ export const actions = {
         if (!valid) {
             return fail(400, { error: 'Invalid email or password' });
         }
+
+        if (user.banned) {
+           return fail(400, { error: 'Your account has been banned.' });
+    }
  
         // Create session in DB and set cookie
         const sessionId = await createSession(user.id);
