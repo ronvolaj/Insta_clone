@@ -1,6 +1,6 @@
 <script>
     import { enhance } from '$app/forms';
-    let { data } = $props();
+    let { data, form } = $props();
     let users = $derived(data.users ?? []);
     let recentImages = $derived(data.recentImages ?? []);
     let tab = $state('users');
@@ -11,6 +11,8 @@
 </svelte:head>
 
 <main class="max-w-6xl mx-auto px-4 py-10 font-[Inter,sans-serif]">
+
+    <!-- Header -->
     <div class="flex items-center gap-3 mb-8">
         <div class="w-9 h-9 bg-red-500 rounded-xl flex items-center justify-center">
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,6 +24,12 @@
             <p class="text-[13px] text-gray-400">Manage users and content</p>
         </div>
     </div>
+
+    {#if form?.error}
+        <div class="mb-5 px-4 py-3 bg-red-50 border border-red-100 rounded-xl text-[13px] text-red-500">
+            {form.error}
+        </div>
+    {/if}
 
     <!-- Stats -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
@@ -49,34 +57,86 @@
         <button onclick={() => tab='images'} class="px-4 py-2 text-[13px] font-medium rounded-lg transition-colors {tab==='images' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}">Photos</button>
     </div>
 
+    <!-- Users Tab -->
     {#if tab === 'users'}
         <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden">
             <table class="w-full text-[13px]">
                 <thead class="bg-gray-50 border-b border-gray-100">
                     <tr>
                         <th class="text-left px-4 py-3 font-medium text-gray-500">User</th>
-                        <th class="text-left px-4 py-3 font-medium text-gray-500">Email</th>
+                        <th class="text-left px-4 py-3 font-medium text-gray-500 hidden sm:table-cell">Email</th>
                         <th class="text-center px-4 py-3 font-medium text-gray-500">Photos</th>
-                        <th class="text-center px-4 py-3 font-medium text-gray-500">Votes</th>
-                        <th class="text-left px-4 py-3 font-medium text-gray-500">Joined</th>
+                        <th class="text-center px-4 py-3 font-medium text-gray-500 hidden sm:table-cell">Votes</th>
+                        <th class="text-center px-4 py-3 font-medium text-gray-500">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {#each users as u}
-                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors {u.banned ? 'opacity-50' : ''}">
                             <td class="px-4 py-3">
-                                <a href="/profile/{u.username}" class="font-medium text-gray-800 hover:text-blue-500 transition-colors">@{u.username}</a>
-                                {#if u.id === 1}<span class="ml-1.5 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full font-medium">Admin</span>{/if}
+                                <div class="flex items-center gap-2">
+                                    <a href="/profile/{u.username}" class="font-medium text-gray-800 hover:text-blue-500 transition-colors">
+                                        @{u.username}
+                                    </a>
+                                    {#if u.role === 'admin'}
+                                        <span class="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full font-medium">Admin</span>
+                                    {/if}
+                                    {#if u.banned}
+                                        <span class="text-[10px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded-full font-medium">Banned</span>
+                                    {/if}
+                                </div>
                             </td>
-                            <td class="px-4 py-3 text-gray-400">{u.email}</td>
+                            <td class="px-4 py-3 text-gray-400 hidden sm:table-cell">{u.email}</td>
                             <td class="px-4 py-3 text-center text-gray-700">{u.image_count}</td>
-                            <td class="px-4 py-3 text-center text-gray-700">{u.total_votes}</td>
-                            <td class="px-4 py-3 text-gray-400">{new Date(u.created_at).toLocaleDateString()}</td>
+                            <td class="px-4 py-3 text-center text-gray-700 hidden sm:table-cell">{u.total_votes}</td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center justify-center gap-1.5">
+
+                                    <!-- Promote/Demote admin -->
+                                    <form method="POST" action="?/toggleAdmin" use:enhance>
+                                        <input type="hidden" name="user_id" value={u.id}/>
+                                        <input type="hidden" name="current_role" value={u.role}/>
+                                        <button type="submit"
+                                            onclick={(e) => { if (!confirm(u.role === 'admin' ? 'Remove admin?' : 'Make admin?')) e.preventDefault(); }}
+                                            title={u.role === 'admin' ? 'Remove admin' : 'Make admin'}
+                                            class="px-2 py-1 text-[11px] font-medium rounded-lg transition-colors
+                                                {u.role === 'admin' ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}">
+                                            {u.role === 'admin' ? 'Demote' : 'Promote'}
+                                        </button>
+                                    </form>
+
+                                    <!-- Ban/Unban -->
+                                    <form method="POST" action="?/toggleBan" use:enhance>
+                                        <input type="hidden" name="user_id" value={u.id}/>
+                                        <input type="hidden" name="banned" value={u.banned ? '1' : '0'}/>
+                                        <button type="submit"
+                                            onclick={(e) => { if (!confirm(u.banned ? 'Unban this user?' : 'Ban this user?')) e.preventDefault(); }}
+                                            title={u.banned ? 'Unban user' : 'Ban user'}
+                                            class="px-2 py-1 text-[11px] font-medium rounded-lg transition-colors
+                                                {u.banned ? 'bg-green-100 text-green-600 hover:bg-green-200' : 'bg-orange-100 text-orange-600 hover:bg-orange-200'}">
+                                            {u.banned ? 'Unban' : 'Ban'}
+                                        </button>
+                                    </form>
+
+                                    <!-- Delete user -->
+                                    <form method="POST" action="?/deleteUser" use:enhance>
+                                        <input type="hidden" name="user_id" value={u.id}/>
+                                        <button type="submit"
+                                            onclick={(e) => { if (!confirm('Delete this user and all their content?')) e.preventDefault(); }}
+                                            title="Delete user"
+                                            class="px-2 py-1 text-[11px] font-medium bg-gray-100 text-gray-500 hover:bg-red-100 hover:text-red-600 rounded-lg transition-colors">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                     {/each}
                 </tbody>
             </table>
         </div>
+
+    <!-- Photos Tab -->
     {:else}
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {#each recentImages as img}
@@ -88,6 +148,7 @@
                         <form method="POST" action="?/deleteImage" use:enhance>
                             <input type="hidden" name="image_id" value={img.id}/>
                             <button type="submit"
+                                aria-label="Delete image"
                                 onclick={(e) => { if (!confirm('Delete this image?')) e.preventDefault(); }}
                                 class="w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-md flex items-center justify-center">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

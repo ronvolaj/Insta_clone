@@ -29,12 +29,14 @@ export async function getUserFromSession(sessionId) {
     if (!sessionId) return null;
 
     const [rows] = await pool.query(
-        `SELECT 
+        `SELECT
             users.id,
             users.username,
             users.email,
             users.avatar,
-            users.created_at
+            users.created_at,
+            users.role,
+            users.banned
          FROM sessions
          JOIN users ON sessions.user_id = users.id
          WHERE sessions.id = ?`,

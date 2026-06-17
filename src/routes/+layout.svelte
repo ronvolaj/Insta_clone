@@ -36,6 +36,9 @@
             {#if user}
                 <a href="/dashboard" class="px-3 py-1.5 text-[13px] text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">Dashboard</a>
                 <a href="/upload" class="px-3 py-1.5 text-[13px] text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors">Upload</a>
+                {#if user.role === 'admin'}
+                    <a href="/admin" class="px-3 py-1.5 text-[13px] text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors">Admin</a>
+                {/if}
                 <a href="/profile/{user.username}" class="flex items-center gap-2 ml-2 px-3 py-1.5 hover:bg-gray-50 rounded-xl transition-colors">
                     {#if user.avatar}
                         <img src={user.avatar} alt={user.username} class="w-7 h-7 rounded-full object-cover"/>
@@ -45,6 +48,9 @@
                         </div>
                     {/if}
                     <span class="text-[13px] font-medium text-gray-700">{user.username}</span>
+                    {#if user.role === 'admin'}
+                        <span class="ml-2 text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-semibold">Admin</span>
+                    {/if}
                 </a>
                 <form method="POST" action="/logout">
                     <button type="submit" class="ml-1 px-3 py-1.5 text-[13px] text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
@@ -78,6 +84,9 @@
             {#if user}
                 <a href="/dashboard" class="py-2 text-[14px] text-gray-700" onclick={() => mobileMenuOpen=false}>Dashboard</a>
                 <a href="/upload" class="py-2 text-[14px] text-gray-700" onclick={() => mobileMenuOpen=false}>Upload</a>
+                {#if user.role === 'admin'}
+                    <a href="/admin" class="py-2 text-[14px] text-red-600 font-medium" onclick={() => mobileMenuOpen=false}>Admin</a>
+                {/if}
                 <a href="/profile/{user.username}" class="py-2 text-[14px] text-gray-700" onclick={() => mobileMenuOpen=false}>Profile</a>
                 <form method="POST" action="/logout">
                     <button type="submit" class="py-2 text-[14px] text-red-500">Logout</button>
